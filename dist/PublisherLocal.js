@@ -135,7 +135,7 @@ class PublisherLocal extends _publisherBase.default {
           version: releaseName,
           files: ymlfiles.map(file => ({
             ...file,
-            url: `${config.releasesFilePrefix}${releaseName}/${file.name}`
+            url: `${config.releasesFilePrefix}${releaseName}/${encodeURIComponent(file.name)}`
           }))
         });
         _fs.default.writeFileSync(_path.default.join(config.directory, releaseName, 'latest.yml'), latestyml, 'utf8');
