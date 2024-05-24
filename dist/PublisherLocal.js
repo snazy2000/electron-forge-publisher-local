@@ -49,7 +49,7 @@ class PublisherLocal extends _publisherBase.default {
       throw new Error('In order to publish locally you must set the "directory" property in your Forge config.');
     }
 
-		const releasesFilePrefix = typeof config.releasesFilePrefix == 'undefined' ? '' : config.releasesFilePrefix;
+    const releasesFilePrefix = typeof config.releasesFilePrefix == 'undefined' ? '' : config.releasesFilePrefix;
 
     for (const releaseName of Object.keys(perReleaseArtifacts)) {
       const artifacts = perReleaseArtifacts[releaseName];
@@ -87,7 +87,7 @@ class PublisherLocal extends _publisherBase.default {
               let releasesString = _fs.default.readFileSync(artifactPath, 'utf8');
               let releasesPathed = releasesString.split(/\r?\n/g).map(line => {
                 let parts = line.split(/ /g);
-                let version = parts[1].replace(/^.*\-(\d\.\d\.\d)\-.*$/,'$1');
+                let version = parts[1].replace(/^.*\-(\d\.\d\.\d)\-.*$/, '$1');
                 parts[1] = releasesFilePrefix + version + '/' + parts[1];
                 return parts.join(' ');
               });
@@ -133,10 +133,13 @@ class PublisherLocal extends _publisherBase.default {
       await (0, _asyncOra.asyncOra)(`Writing latest.yml to both ${config.directory} and ${releaseName}`, async () => {
         let latestyml = _yaml.default.dump({
           version: releaseName,
-          files: ymlfiles
+          files: ymlfiles.map(file => ({
+            ...file,
+            url: `${config.releasesFilePrefix}${releaseName}/${file.name}`
+          }))
         });
-        _fs.default.writeFileSync(_path.default.join(config.directory,releaseName,'latest.yml'), latestyml, 'utf8');
-        _fs.default.writeFileSync(_path.default.join(config.directory,'latest.yml'), latestyml, 'utf8');
+        _fs.default.writeFileSync(_path.default.join(config.directory, releaseName, 'latest.yml'), latestyml, 'utf8');
+        _fs.default.writeFileSync(_path.default.join(config.directory, 'latest.yml'), latestyml, 'utf8');
       });
     }
   }
